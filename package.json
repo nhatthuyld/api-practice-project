@@ -1,0 +1,20 @@
+{
+  "name": "api-practice-project",
+  "version": "1.0.0",
+  "description": "Independent API Learning Project with Express and Playwright",
+  "main": "server/app.js",
+  "scripts": {
+    "server": "node server/app.js",
+    "test": "npx playwright test"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.1",
+    "@types/node": "^20.14.2",
+    "typescript": "^5.4.5"
+  }
+}
