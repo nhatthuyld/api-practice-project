@@ -15,10 +15,41 @@ let todos = [
   { id: 3, title: 'Viet test API voi Playwright', completed: false }
 ];
 
+// Token tĩnh phục vụ cho việc thực hành test Auth
+const MOCK_TOKEN = 'mock-jwt-token-xyz123';
+
+// 1. API Đăng nhập - POST /api/login
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  
+  // Tài khoản mật khẩu test mặc định
+  if (username === 'admin' && password === 'password123') {
+    return res.status(200).json({ token: MOCK_TOKEN });
+  }
+  
+  return res.status(401).json({ message: 'Tai khoan hoac mat khau khong dung' });
+});
+
+// Middleware xác thực Token (Chốt chặn bảo vệ các API phía dưới)
+const authMiddleware = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  
+  // Kiểm tra xem header Authorization có đúng định dạng "Bearer mock-jwt-token-xyz123" không
+  if (authHeader && authHeader === `Bearer ${MOCK_TOKEN}`) {
+    return next(); // Token hợp lệ, cho phép đi tiếp
+  }
+  
+  // Trả về lỗi 401 Unauthorized nếu không có token hoặc token sai
+  return res.status(401).json({ message: 'Yeu cau dang nhap de truy cap tai nguyen nay' });
+};
+
 // Helper to find todo
 const findTodo = (id) => todos.find(t => t.id === parseInt(id));
 
-// 1. GET /api/todos - Lấy danh sách công việc
+// Áp dụng authMiddleware cho toàn bộ các API Todos phía dưới
+app.use('/api/todos', authMiddleware);
+
+// 1. GET /api/todos - Lấy danh sách công việc (đã được bảo vệ bởi middleware)
 app.get('/api/todos', (req, res) => {
   res.status(200).json(todos);
 });
