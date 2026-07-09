@@ -18,4 +18,19 @@ export default defineConfig({
       'Content-Type': 'application/json',
     },
   },
+
+  // Định nghĩa các Projects trong Playwright
+  projects: [
+    // 1. Dự án Setup: Chạy đầu tiên để đăng nhập lấy Token lưu vào file
+    {
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
+    // 2. Dự án kiểm thử API chính: Chỉ chạy sau khi dự án Setup đã hoàn thành
+    {
+      name: 'api-tests',
+      dependencies: ['setup'], // Khai báo phụ thuộc vào setup
+      testIgnore: /.*\.setup\.ts/, // Loại trừ file setup khỏi bộ test này
+    }
+  ]
 });
