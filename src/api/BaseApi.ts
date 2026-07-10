@@ -9,7 +9,7 @@ export class BaseApi {
   constructor(request: APIRequestContext, token?: string) {
     this.request = request;
     // Nếu truyền token trực tiếp thì dùng, nếu không sẽ tự động đọc từ file token.json
-    this.token = token || this.loadTokenFromSetup();
+    this.token = token !== undefined ? token : this.loadTokenFromSetup();
   }
 
   // Đọc token đã được lưu bởi auth.setup.ts

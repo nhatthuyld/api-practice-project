@@ -32,15 +32,11 @@ test.describe('API Chaining - Kịch bản kiểm thử Todo E2E', () => {
 
     const getBody = await getResponse.json();
     // Xác thực Schema
-    const parsedGet = TodoSchema.safeParse(getBody);
-    expect(parsedGet.success).toBe(true);
-
-    if (parsedGet.success) {
-      expect(parsedGet.data.id).toBe(todoId);
-      expect(parsedGet.data.title).toBe(todoTitle);
-      expect(parsedGet.data.completed).toBe(false); // Mới tạo phải là false
-      console.log(`[Bước 2] Đã xem chi tiết Todo ID = ${todoId}. Dữ liệu chính xác!`);
-    }
+    const dataGet = TodoSchema.parse(getBody);
+    expect(dataGet.id).toBe(todoId);
+    expect(dataGet.title).toBe(todoTitle);
+    expect(dataGet.completed).toBe(false); // Mới tạo phải là false
+    console.log(`[Bước 2] Đã xem chi tiết Todo ID = ${todoId}. Dữ liệu chính xác!`);
 
     // =========================================================================
     // BƯỚC 3: CẬP NHẬT TRẠNG THÁI TODO (PUT /:id)
@@ -53,15 +49,11 @@ test.describe('API Chaining - Kịch bản kiểm thử Todo E2E', () => {
     expect(updateResponse.status()).toBe(200);
 
     const updateBody = await updateResponse.json();
-    const parsedUpdate = TodoSchema.safeParse(updateBody);
-    expect(parsedUpdate.success).toBe(true);
-
-    if (parsedUpdate.success) {
-      expect(parsedUpdate.data.id).toBe(todoId);
-      expect(parsedUpdate.data.title).toBe(updatedTitle);
-      expect(parsedUpdate.data.completed).toBe(true); // Trạng thái đã chuyển sang true
-      console.log(`[Bước 3] Đã cập nhật Todo ID = ${todoId} sang trạng thái Completed`);
-    }
+    const dataUpdate = TodoSchema.parse(updateBody);
+    expect(dataUpdate.id).toBe(todoId);
+    expect(dataUpdate.title).toBe(updatedTitle);
+    expect(dataUpdate.completed).toBe(true); // Trạng thái đã chuyển sang true
+    console.log(`[Bước 3] Đã cập nhật Todo ID = ${todoId} sang trạng thái Completed`);
 
     // =========================================================================
     // BƯỚC 4: XÓA TODO (DELETE /:id)

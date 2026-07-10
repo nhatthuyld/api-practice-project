@@ -22,15 +22,10 @@ test.describe('API Practice - Todo REST API (Enterprise Refactored)', () => {
     const body = await response.json();
 
     // 5. [SCHEMA VALIDATION]: So khớp dữ liệu body nhận về với cấu trúc mảng đã định nghĩa sẵn
-    const parsed = TodoArraySchema.safeParse(body);
+    const data = TodoArraySchema.parse(body);
 
-    // 6. Khẳng định rằng việc so khớp cấu trúc dữ liệu phải THÀNH CÔNG
-    expect(parsed.success).toBe(true);
-
-    // 7. Nếu cấu trúc đúng, tiến hành kiểm tra sâu hơn vào nội dung dữ liệu
-    if (parsed.success) {
-      expect(parsed.data.length).toBeGreaterThanOrEqual(3);
-    }
+    // 6. Tiến hành kiểm tra sâu hơn vào nội dung dữ liệu
+    expect(data.length).toBeGreaterThanOrEqual(3);
   });
 
   // ==========================================
@@ -48,17 +43,14 @@ test.describe('API Practice - Todo REST API (Enterprise Refactored)', () => {
     const body = await response.json();
 
     // 2. [SCHEMA VALIDATION]: Xác thực cấu trúc của Todo đơn lẻ mới tạo
-    const parsed = TodoSchema.safeParse(body);
-    expect(parsed.success).toBe(true);
+    const data = TodoSchema.parse(body);
 
-    if (parsed.success) {
-      // 3. So sánh dữ liệu thực tế nhận về có trùng khớp với tiêu đề ngẫu nhiên đã gửi không
-      expect(parsed.data.title).toBe(randomTitle);
-      expect(parsed.data.completed).toBe(false);
+    // 3. So sánh dữ liệu thực tế nhận về có trùng khớp với tiêu đề ngẫu nhiên đã gửi không
+    expect(data.title).toBe(randomTitle);
+    expect(data.completed).toBe(false);
 
-      // 4. [DỌN DẸP DỮ LIỆU]: Sau khi test tạo thành công, ta xóa Todo này đi
-      await todoApi.deleteTodo(parsed.data.id);
-    }
+    // 4. [DỌN DẸP DỮ LIỆU]: Sau khi test tạo thành công, ta xóa Todo này đi
+    await todoApi.deleteTodo(data.id);
   });
 
   // ==========================================
@@ -77,13 +69,9 @@ test.describe('API Practice - Todo REST API (Enterprise Refactored)', () => {
     expect(response.status()).toBe(200);
 
     const body = await response.json();
-    const parsed = TodoSchema.safeParse(body);
-    expect(parsed.success).toBe(true);
-
-    if (parsed.success) {
-      expect(parsed.data.id).toBe(targetId);
-      expect(parsed.data.title).toBe(randomTitle);
-    }
+    const data = TodoSchema.parse(body);
+    expect(data.id).toBe(targetId);
+    expect(data.title).toBe(randomTitle);
 
     // 3. [DỌN DẸP]: Xóa Todo mẫu đi để trả database về trạng thái cũ
     await todoApi.deleteTodo(targetId);
@@ -106,14 +94,10 @@ test.describe('API Practice - Todo REST API (Enterprise Refactored)', () => {
     expect(response.status()).toBe(200);
 
     const body = await response.json();
-    const parsed = TodoSchema.safeParse(body);
-    expect(parsed.success).toBe(true);
-
-    if (parsed.success) {
-      expect(parsed.data.id).toBe(targetId);
-      expect(parsed.data.title).toBe('Todo de test UPDATE (Da hoan thanh)');
-      expect(parsed.data.completed).toBe(true);
-    }
+    const data = TodoSchema.parse(body);
+    expect(data.id).toBe(targetId);
+    expect(data.title).toBe('Todo de test UPDATE (Da hoan thanh)');
+    expect(data.completed).toBe(true);
 
     // 3. [DỌN DẸP]: Xóa Todo mẫu sau khi test xong
     await todoApi.deleteTodo(targetId);
@@ -196,5 +180,4 @@ test.describe('API Practice - Todo REST API (Enterprise Refactored)', () => {
 
     const body = await response.json();
     expect(body.message).toBe('Khong tim thay cong viec voi id 9999');
-  });
-});
+  });});

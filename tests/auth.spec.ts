@@ -46,8 +46,8 @@ test.describe('API Authentication & Authorization Tests', () => {
   // =======================================================
 
   test('GET /todos - Bị từ chối truy cập khi không gửi Token', async ({ request }) => {
-    // Khởi tạo TodoApi nhưng KHÔNG truyền Token vào constructor
-    const todoApi = new TodoApi(request);
+    // Khởi tạo TodoApi nhưng truyền Token rỗng để không gửi token
+    const todoApi = new TodoApi(request, '');
 
     const response = await todoApi.getTodos();
 
@@ -94,7 +94,6 @@ test.describe('API Authentication & Authorization Tests', () => {
     expect(response.status()).toBe(200);
 
     const body = await response.json();
-    const parsed = TodoArraySchema.safeParse(body);
-    expect(parsed.success).toBe(true);
+    TodoArraySchema.parse(body);
   });
 });
