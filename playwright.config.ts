@@ -19,6 +19,14 @@ export default defineConfig({
     },
   },
 
+  // Tự động khởi động Mock API Server khi chạy test
+  webServer: {
+    command: 'npm run server',
+    url: 'http://localhost:3000/api/todos',
+    reuseExistingServer: !process.env.CI,
+  },
+
+
   // Định nghĩa các Projects trong Playwright
   projects: [
     // 1. Dự án Setup: Chạy đầu tiên để đăng nhập lấy Token lưu vào file

@@ -6,11 +6,13 @@ export class ProductApi extends BaseApi {
     super(request, token);
   }
 
-  async getProducts() {
+  async getProducts(params?: { search?: string; minPrice?: number; maxPrice?: number }) {
     return await this.request.get('/api/products', {
+      params,
       headers: this.getHeaders()
     });
   }
+
 
   async getProductById(id: number | string) {
     return await this.request.get(`/api/products/${id}`, {

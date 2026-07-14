@@ -21,24 +21,24 @@ const MOCK_TOKEN = 'mock-jwt-token-xyz123';
 // 1. API Đăng nhập - POST /api/login
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
-  
+
   // Tài khoản mật khẩu test mặc định
   if (username === 'admin' && password === 'password123') {
     return res.status(200).json({ token: MOCK_TOKEN });
   }
-  
+
   return res.status(401).json({ message: 'Tai khoan hoac mat khau khong dung' });
 });
 
 // Middleware xác thực Token (Chốt chặn bảo vệ các API phía dưới)
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  
+
   // Kiểm tra xem header Authorization có đúng định dạng "Bearer mock-jwt-token-xyz123" không
   if (authHeader && authHeader === `Bearer ${MOCK_TOKEN}`) {
     return next(); // Token hợp lệ, cho phép đi tiếp
   }
-  
+
   // Trả về lỗi 401 Unauthorized nếu không có token hoặc token sai
   return res.status(401).json({ message: 'Yeu cau dang nhap de truy cap tai nguyen nay' });
 };
@@ -63,19 +63,20 @@ app.get('/api/todos/:id', (req, res) => {
   res.status(200).json(todo);
 });
 
+
 // 3. POST /api/todos - Tạo mới công việc
 app.post('/api/todos', (req, res) => {
   const { title } = req.body;
   if (!title || title.trim() === '') {
     return res.status(400).json({ message: 'Tieu de cong viec khong duoc de trong' });
   }
-  
+
   const newTodo = {
     id: todos.length > 0 ? Math.max(...todos.map(t => t.id)) + 1 : 1,
     title: title.trim(),
     completed: false
   };
-  
+
   todos.push(newTodo);
   res.status(201).json(newTodo);
 });
@@ -133,8 +134,26 @@ let orders = [];
 const findProduct = (id) => products.find(p => p.id === parseInt(id));
 
 // 1. GET /api/products - Lay danh sach tat ca san pham (Khong can Auth)
+// Ho tro loc qua Query Parameters: search, minPrice, maxPrice
 app.get('/api/products', (req, res) => {
-  res.status(200).json(products);
+  const { search, minPrice, maxPrice } = req.query;
+  let filteredProducts = [...products];
+
+  if (search) {
+    filteredProducts = filteredProducts.filter(p => 
+      p.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }
+
+  if (minPrice) {
+    filteredProducts = filteredProducts.filter(p => p.price >= parseFloat(minPrice));
+  }
+
+  if (maxPrice) {
+    filteredProducts = filteredProducts.filter(p => p.price <= parseFloat(maxPrice));
+  }
+
+  res.status(200).json(filteredProducts);
 });
 
 // 2. GET /api/products/:id - Lay chi tiet san pham (Khong can Auth)
@@ -173,7 +192,7 @@ app.get('/api/cart', (req, res) => {
 // 4. POST /api/cart - Them san pham vao gio hang
 app.post('/api/cart', (req, res) => {
   const { productId, quantity } = req.body;
-  
+
   if (!productId || !quantity || quantity <= 0) {
     return res.status(400).json({ message: 'Thong tin san pham hoac so luong khong hop le' });
   }
@@ -214,11 +233,11 @@ app.post('/api/orders', (req, res) => {
   for (const item of cart.items) {
     const product = findProduct(item.productId);
     if (!product || product.stock < item.quantity) {
-      return res.status(400).json({ 
-        message: `Dat hang that bai. San pham ${product ? product.name : 'ID ' + item.productId} khong du hang hoac da het` 
+      return res.status(400).json({
+        message: `Dat hang that bai. San pham ${product ? product.name : 'ID ' + item.productId} khong du hang hoac da het`
       });
     }
-    
+
     orderItems.push({
       productId: product.id,
       name: product.name,
